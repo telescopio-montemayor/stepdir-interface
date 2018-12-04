@@ -67,13 +67,13 @@ void setup()
   last_update_time_0 = micros();
   last_update_time_1 = micros();
 
-  manual_control = digitalRead(MANUAL_TOGGLE_PIN);
+  manual_control = !digitalRead(MANUAL_TOGGLE_PIN);
   last_manual_update_time = micros();
 }
 
 void loop()
 {
-  manual_control = digitalRead(MANUAL_TOGGLE_PIN);
+  manual_control = !digitalRead(MANUAL_TOGGLE_PIN);
 
   unsigned long now = micros();
   if ((targetSpeed_0 != 0)
