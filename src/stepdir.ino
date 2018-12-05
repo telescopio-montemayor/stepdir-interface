@@ -12,15 +12,18 @@
 #define AXIS_1_PIN_ENABLE           9
 
 // When low ignore commands from host and use joystick/button pad instead
-#define MANUAL_TOGGLE_PIN           6
-#define MANUAL_SPEED_PIN            A0
-#define MANUAL_CONTROL_AXIS_0_PIN   A1
-#define MANUAL_CONTROL_AXIS_1_PIN   A2
-#define MANUAL_MIN_SPEED            133
-#define MANUAL_MAX_SPEED            20000
-#define MANUAL_UPDATE_INTERVAL      (UPDATE_TIMEOUT / 2)
+#define MANUAL_TOGGLE_PIN             6
+#define MANUAL_SPEED_PIN              A0
+#define MANUAL_CONTROL_AXIS_0_PIN     A1
+#define MANUAL_CONTROL_AXIS_1_PIN     A2
+// Sometimes the joystick/pad wiring does not reflect the intended movement. This swaps the direction meaning.
+#define MANUAL_CONTROL_AXIS_0_INVERT  (false)
+#define MANUAL_CONTROL_AXIS_1_INVERT  (false)
+#define MANUAL_MIN_SPEED              133
+#define MANUAL_MAX_SPEED              20000
+#define MANUAL_UPDATE_INTERVAL        (UPDATE_TIMEOUT / 2)
 // if the deviation from mid point is less than this we assume the joystick is centered
-#define MANUAL_DEADBAND             10
+#define MANUAL_DEADBAND               10
 
 
 bool manual_control = false;
@@ -155,6 +158,9 @@ void loop()
       if (axis_0_command < 512) {
         targetSpeed_0 = -1 * targetSpeed_0;
       }
+      if (MANUAL_CONTROL_AXIS_0_INVERT) {
+        targetSpeed_0 = -1 * targetSpeed_0;
+      }
       stepInterval_0 = abs(1000000.0 / targetSpeed_0);
     } else {
       targetSpeed_0 = 0;
@@ -164,6 +170,9 @@ void loop()
       targetSpeed_1 = map(axis_1_dev, MANUAL_DEADBAND, 512, 0, manual_speed_max);
       if (axis_1_command < 512) {
         targetSpeed_1 = -1 * targetSpeed_0;
+      }
+      if (MANUAL_CONTROL_AXIS_1_INVERT) {
+        targetSpeed_1 = -1 * targetSpeed_1;
       }
       stepInterval_1 = abs(1000000.0 / targetSpeed_1);
     } else {
