@@ -39,6 +39,8 @@ unsigned long last_step_time_1 = 0;
 unsigned long last_update_time_1 = 0;
 unsigned long stepInterval_1 = 1000;
 
+void update_direction_pins();
+void update_step_intervals();
 
 void setup()
 {
@@ -102,6 +104,7 @@ void loop()
   // A+12345\n for channel 0
   // B+12345\n for channel 1
   if ((!manual_control) && Serial.available() >= 9) {
+    bool changed = false;
     int axis = 0;
     digitalWrite(MONITOR_PIN, 1);
 
@@ -115,30 +118,19 @@ void loop()
 
     if (axis == 'A') {
       targetSpeed_0 = Serial.parseFloat();
-      if (targetSpeed_0 != 0) {
-        stepInterval_0 = fabs(1000000.0 / targetSpeed_0);
-      }
       last_update_time_0 = micros();
+      changed = true;
     }
 
     if (axis == 'B') {
       targetSpeed_1 = Serial.parseFloat();
-      if (targetSpeed_1 != 0) {
-        stepInterval_1 = fabs(1000000.0 / targetSpeed_1);
-      }
       last_update_time_1 = micros();
+      changed = true;
     }
 
-    if (targetSpeed_0 > 0) {
-      digitalWrite(AXIS_0_PIN_DIR, 1);
-    } else {
-      digitalWrite(AXIS_0_PIN_DIR, 0);
-    }
-
-    if (targetSpeed_1 > 0) {
-      digitalWrite(AXIS_1_PIN_DIR, 1);
-    } else {
-      digitalWrite(AXIS_1_PIN_DIR, 0);
+    if (changed) {
+      update_step_intervals();
+      update_direction_pins();
     }
 
     digitalWrite(MONITOR_PIN, 0);
@@ -161,7 +153,6 @@ void loop()
       if (MANUAL_CONTROL_AXIS_0_INVERT) {
         targetSpeed_0 = -1 * targetSpeed_0;
       }
-      stepInterval_0 = abs(1000000.0 / targetSpeed_0);
     } else {
       targetSpeed_0 = 0;
     }
@@ -174,23 +165,40 @@ void loop()
       if (MANUAL_CONTROL_AXIS_1_INVERT) {
         targetSpeed_1 = -1 * targetSpeed_1;
       }
-      stepInterval_1 = abs(1000000.0 / targetSpeed_1);
     } else {
       targetSpeed_1 = 0;
     }
 
-    if (targetSpeed_0 > 0) {
-      digitalWrite(AXIS_0_PIN_DIR, 1);
-    } else {
-      digitalWrite(AXIS_0_PIN_DIR, 0);
-    }
-
-    if (targetSpeed_1 > 0) {
-      digitalWrite(AXIS_1_PIN_DIR, 1);
-    } else {
-      digitalWrite(AXIS_1_PIN_DIR, 0);
-    }
+    update_step_intervals();
+    update_direction_pins();
 
     last_manual_update_time = now;
+  }
+}
+
+
+void update_step_intervals()
+{
+  if (targetSpeed_0 != 0) {
+    stepInterval_0 = fabs(1000000.0 / targetSpeed_0);
+  }
+  if (targetSpeed_1 != 0) {
+    stepInterval_1 = fabs(1000000.0 / targetSpeed_1);
+  }
+}
+
+
+void update_direction_pins()
+{
+  if (targetSpeed_0 > 0) {
+    digitalWrite(AXIS_0_PIN_DIR, 1);
+  } else {
+    digitalWrite(AXIS_0_PIN_DIR, 0);
+  }
+
+  if (targetSpeed_1 > 0) {
+    digitalWrite(AXIS_1_PIN_DIR, 1);
+  } else {
+    digitalWrite(AXIS_1_PIN_DIR, 0);
   }
 }
