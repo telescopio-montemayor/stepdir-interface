@@ -179,6 +179,18 @@ void loop()
       targetSpeed_1 = 0;
     }
 
+    if (targetSpeed_0 > 0) {
+      digitalWrite(AXIS_0_PIN_DIR, 1);
+    } else {
+      digitalWrite(AXIS_0_PIN_DIR, 0);
+    }
+
+    if (targetSpeed_1 > 0) {
+      digitalWrite(AXIS_1_PIN_DIR, 1);
+    } else {
+      digitalWrite(AXIS_1_PIN_DIR, 0);
+    }
+
     last_manual_update_time = now;
   }
 }
