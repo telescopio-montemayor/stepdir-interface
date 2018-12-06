@@ -169,7 +169,7 @@ void loop()
     if (axis_1_dev > MANUAL_DEADBAND) {
       targetSpeed_1 = map(axis_1_dev, MANUAL_DEADBAND, 512, 0, manual_speed_max);
       if (axis_1_command < 512) {
-        targetSpeed_1 = -1 * targetSpeed_0;
+        targetSpeed_1 = -1 * targetSpeed_1;
       }
       if (MANUAL_CONTROL_AXIS_1_INVERT) {
         targetSpeed_1 = -1 * targetSpeed_1;
