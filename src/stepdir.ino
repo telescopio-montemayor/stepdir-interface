@@ -20,10 +20,10 @@
 #define MANUAL_CONTROL_AXIS_0_INVERT  (false)
 #define MANUAL_CONTROL_AXIS_1_INVERT  (false)
 #define MANUAL_MIN_SPEED              133
-#define MANUAL_MAX_SPEED              20000
+#define MANUAL_MAX_SPEED              (40000)
 #define MANUAL_UPDATE_INTERVAL        (UPDATE_TIMEOUT / 2)
 // if the deviation from mid point is less than this we assume the joystick is centered
-#define MANUAL_DEADBAND               10
+#define MANUAL_DEADBAND               30
 
 
 bool manual_control = false;
