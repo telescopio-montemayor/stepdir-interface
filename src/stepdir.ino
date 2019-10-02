@@ -16,6 +16,23 @@
 #define MANUAL_SPEED_PIN              A0
 #define MANUAL_CONTROL_AXIS_0_PIN     A1
 #define MANUAL_CONTROL_AXIS_1_PIN     A2
+
+// Runs axis 0 at tracking speed if manual mode is selected (and the joystick is centered)
+#define TRACKING_TOGGLE_PIN           5
+// 15.04106858 degrees/hour
+// 0.00417807460555556 degrees/second
+//
+// On our mount, one revolution on the worm translates to 1 degree on the output shaft (1:360)
+// so we need to turn the axis 0 at a rate of
+//
+// 0.00417807460555556 revolutions/second
+//
+// We use 25600 microsteps. Then the tracking speed is:
+//
+// 106.958709902222 (micro)steps/second
+//
+#define TRACKING_SPEED                (106.958709902222)
+
 // Sometimes the joystick/pad wiring does not reflect the intended movement. This swaps the direction meaning.
 #define MANUAL_CONTROL_AXIS_0_INVERT  (false)
 #define MANUAL_CONTROL_AXIS_1_INVERT  (false)
@@ -27,6 +44,7 @@
 
 
 bool manual_control = false;
+bool tracking = false;
 unsigned long last_manual_update_time = 0;
 
 float targetSpeed_0 = 0;
@@ -62,6 +80,7 @@ void setup()
   digitalWrite(AXIS_0_PIN_DIR, 1);
   digitalWrite(AXIS_1_PIN_DIR, 1);
 
+  pinMode(TRACKING_TOGGLE_PIN, INPUT_PULLUP);
   pinMode(MANUAL_TOGGLE_PIN, INPUT_PULLUP);
   pinMode(MANUAL_SPEED_PIN, INPUT);
   pinMode(MANUAL_CONTROL_AXIS_0_PIN, INPUT);
@@ -72,12 +91,14 @@ void setup()
   last_update_time_0 = micros();
   last_update_time_1 = micros();
 
+  tracking = !digitalRead(TRACKING_TOGGLE_PIN);
   manual_control = !digitalRead(MANUAL_TOGGLE_PIN);
   last_manual_update_time = micros();
 }
 
 void loop()
 {
+  tracking = !digitalRead(TRACKING_TOGGLE_PIN);
   manual_control = !digitalRead(MANUAL_TOGGLE_PIN);
 
   unsigned long now = micros();
@@ -155,6 +176,10 @@ void loop()
       }
     } else {
       targetSpeed_0 = 0;
+    }
+
+    if (tracking) {
+      targetSpeed_0 = targetSpeed_0 + TRACKING_SPEED;
     }
 
     if (axis_1_dev > MANUAL_DEADBAND) {
