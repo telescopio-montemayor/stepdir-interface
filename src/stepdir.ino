@@ -39,7 +39,7 @@
 #define MANUAL_CONTROL_AXIS_0_INVERT  (false)
 #define MANUAL_CONTROL_AXIS_1_INVERT  (false)
 #define MANUAL_MIN_SPEED              133
-#define MANUAL_MAX_SPEED              (40000)
+#define MANUAL_MAX_SPEED              (80000)
 #define MANUAL_UPDATE_INTERVAL        (UPDATE_TIMEOUT / 2)
 // Steps / s^2
 #define MANUAL_SLEW_RATE_LIMIT        (64000 * MANUAL_UPDATE_INTERVAL * 1e-6)
