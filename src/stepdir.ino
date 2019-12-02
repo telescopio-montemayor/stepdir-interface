@@ -1,3 +1,5 @@
+#include "ratelimit.h"
+
 // Timeout in microseconds.
 // If the driver does not receive an update from the host after that amount of time the axis is stopped.
 #define UPDATE_TIMEOUT              (100 * 1000LL)
@@ -39,6 +41,8 @@
 #define MANUAL_MIN_SPEED              133
 #define MANUAL_MAX_SPEED              (40000)
 #define MANUAL_UPDATE_INTERVAL        (UPDATE_TIMEOUT / 2)
+// Steps / s^2
+#define MANUAL_SLEW_RATE_LIMIT        (64000 * MANUAL_UPDATE_INTERVAL * 1e-6)
 // if the deviation from mid point is less than this we assume the joystick is centered
 #define MANUAL_DEADBAND               30
 
@@ -59,6 +63,9 @@ unsigned long stepInterval_1 = 1000;
 
 void update_direction_pins();
 void update_step_intervals();
+
+SlewRateLimit axis_0_limiter(MANUAL_SLEW_RATE_LIMIT);
+SlewRateLimit axis_1_limiter(MANUAL_SLEW_RATE_LIMIT);
 
 void setup()
 {
@@ -193,6 +200,9 @@ void loop()
     } else {
       targetSpeed_1 = 0;
     }
+
+    targetSpeed_0 = axis_0_limiter.process(targetSpeed_0);
+    targetSpeed_1 = axis_1_limiter.process(targetSpeed_1);
 
     update_step_intervals();
     update_direction_pins();
